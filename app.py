@@ -196,7 +196,10 @@ if "soccer_sports" in st.session_state:
 
             response.raise_for_status()
             events = response.json()
-
+            retrieved_at = datetime.now(timezone.utc).strftime(
+                "%Y-%m-%d %H:%M:%S UTC"
+            )
+            st.caption(f"Odds retrieved at: {retrieved_at}")
             results = []
 
             def to_decimal(outcome):
