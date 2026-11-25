@@ -87,8 +87,10 @@ if st.button("Calculate +EV", type="primary"):
         st.warning("No outcomes meet your minimum EV threshold.")
 
 st.caption(
-    "Manual odds calculator. No live bookmaker connection yet. "
-    "Verify that all odds refer to the same fixture and market."
+    "SportPesa +EV Scanner: Manual and automatic "
+    "Pinnacle vs SportPesa football 1X2 comparisons. "
+    "Verify current odds before placing bets."
+)
 )
 import requests
 
