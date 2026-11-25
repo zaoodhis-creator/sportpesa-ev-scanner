@@ -16,11 +16,12 @@ st.info(
     "The calculator removes Pinnacle's margin."
 )
 
-st.sidebar.header("Scanner Settings")
-min_ev = st.sidebar.number_input(
+st.header("Scanner Settings")
+
+min_ev = st.number_input(
     "Minimum EV (%)",
     min_value=0.0,
-    value=5.0,
+    value=3.0,
     step=0.5
 )
 
@@ -28,7 +29,7 @@ st.header("Enter Match Odds")
 
 match = st.text_input("Match name")
 
-col1, col2, col3 = st.columns(3)
+col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Pinnacle")
@@ -41,10 +42,6 @@ with col2:
     s_home = st.number_input("SportPesa Home", min_value=1.01, value=2.20)
     s_draw = st.number_input("SportPesa Draw", min_value=1.01, value=3.60)
     s_away = st.number_input("SportPesa Away", min_value=1.01, value=4.10)
-
-with col3:
-    st.subheader("EV Results")
-    st.write("Results appear after calculation.")
 
 if st.button("Calculate +EV", type="primary"):
 
@@ -82,7 +79,9 @@ if st.button("Calculate +EV", type="primary"):
     st.subheader("Qualifying +EV bets")
 
     if len(qualified) > 0:
-        st.success(f"{len(qualified)} outcome(s) meet your EV threshold.")
+        st.success(
+            f"{len(qualified)} outcome(s) meet your EV threshold."
+        )
         st.dataframe(qualified, use_container_width=True)
     else:
         st.warning("No outcomes meet your minimum EV threshold.")
