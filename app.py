@@ -2,9 +2,6 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import datetime, timezone
-import streamlit as st
-import pandas as pd
-
 st.set_page_config(
     page_title="SportPesa EV Scanner",
     page_icon="⚽",
