@@ -91,7 +91,7 @@ st.caption(
     "Pinnacle vs SportPesa football 1X2 comparisons. "
     "Verify current odds before placing bets."
 )
-)
+
 import requests
 
 st.divider()
