@@ -164,43 +164,75 @@ if st.button("Load Football Competitions"):
         st.error(f"Could not load competitions: {error}")
 
 
+
 if "soccer_sports" in st.session_state:
 
     competitions = st.session_state["soccer_sports"]
 
-    competition_names = {
-        s["title"]: s["key"] for s in competitions
-    }
-
-    selected_competition = st.selectbox(
-        "Choose a football competition",
-        list(competition_names.keys())
-    )
-
-    if st.button("Retrieve Pinnacle vs SportPesa Odds"):
+    if st.button("Retrieve Pinnacle vs SportPesa Odds — ALL LEAGUES"):
 
         try:
             api_key = st.secrets["PROP_LINE_API_KEY"]
 
-            sport_key = competition_names[selected_competition]
+            events = []
+            failed_competitions = []
 
-            response = requests.get(
-                f"{API_BASE}/sports/{sport_key}/odds",
-                headers={"X-API-Key": api_key},
-                params={
-                    "markets": "h2h",
-                    "bookmakers": "pinnacle,sportpesa"
-                },
-                timeout=30
-            )
+            progress = st.progress(0)
+            status = st.empty()
 
-            response.raise_for_status()
-            events = response.json()
+            for index, competition in enumerate(competitions):
+
+                sport_key = competition["key"]
+                competition_name = competition["title"]
+
+                status.write(f"Loading {competition_name}...")
+
+                try:
+                    response = requests.get(
+                        f"{API_BASE}/sports/{sport_key}/odds",
+                        headers={"X-API-Key": api_key},
+                        params={
+                            "markets": "h2h",
+                            "bookmakers": "pinnacle,sportpesa"
+                        },
+                        timeout=30
+                    )
+
+                    response.raise_for_status()
+                    competition_events = response.json()
+
+                    for event in competition_events:
+                        event["competition"] = competition_name
+
+                    events.extend(competition_events)
+
+                except Exception as error:
+                    failed_competitions.append(
+                        f"{competition_name}: {error}"
+                    )
+
+                progress.progress((index + 1) / len(competitions))
+
             retrieved_at = datetime.now(timezone.utc).strftime(
                 "%Y-%m-%d %H:%M:%S UTC"
             )
+
             st.caption(f"Odds retrieved at: {retrieved_at}")
+
+            st.success(
+                f"Loaded {len(events)} fixtures from "
+                f"{len(competitions) - len(failed_competitions)} "
+                f"competitions."
+            )
+
+            if failed_competitions:
+                st.warning(
+                    "Some competitions could not be loaded: "
+                    + "; ".join(failed_competitions)
+                )
+
             results = []
+
 
             def to_decimal(outcome):
                 if outcome.get("price_decimal"):
