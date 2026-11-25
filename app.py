@@ -90,3 +90,39 @@ st.caption(
     "Manual odds calculator. No live bookmaker connection yet. "
     "Verify that all odds refer to the same fixture and market."
 )
+import requests
+
+st.divider()
+st.header("Automatic Odds API Test")
+
+if st.button("Test API Connection"):
+    try:
+        api_key = st.secrets["PROP_LINE_API_KEY"]
+
+        response = requests.get(
+            "https://api.prop-line.com/v1/sports",
+            headers={"X-API-Key": api_key},
+            timeout=20
+        )
+
+        if response.status_code == 200:
+            sports = response.json()
+            st.success("API connection successful!")
+
+            soccer = [
+                sport for sport in sports
+                if "soccer" in sport.get("key", "")
+            ]
+
+            st.write("Available football competitions:")
+            st.json(soccer)
+
+        elif response.status_code == 401:
+            st.error("API key is invalid. Check Streamlit Secrets.")
+
+        else:
+            st.error(f"API error: {response.status_code}")
+            st.write(response.text)
+
+    except Exception as error:
+        st.error(f"Connection problem: {error}")
